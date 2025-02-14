@@ -5,7 +5,7 @@ dp=0.1;   % The increment of the penal coefficient
 E=3e9;    % Young's modulus
 nu=0.4; % Poisson ratio
 xthreshold=0.01; % Low density threshold
-force=200 ;  % Magnitude of external force
+force=200;  % Magnitude of external force
 IterMax=16;  % Maximum number of Newton-Raphson iterations
 pmin=1e-4;
 parent_dir_name ='GNTO results';
@@ -83,7 +83,7 @@ for step = 1:numSteps
     % incremental load
     CurrentForce = ForceStep * step;
     
-    [U,GKF,dRdpe] = GNFEA(ndof,nele,Freedofs,IterMax,CurrentForce,Nodes,Eles,edofMat,E,nu,xy00,p,uselessNode,pmin,U);
+    [U,GKF,dRdpe] = GNFEA(ndof,nele,Freedofs,IterMax,CurrentForce,Nodes,Eles,edofMat,E,nu,xy00,p,uselessNode,pmin,U, step, numSteps);
     
     fprintf(' Load step %d/%d completed \n', step, numSteps);
 end
@@ -117,7 +117,7 @@ end
 end
 %=== Geometrically nonlinear FEA + Residual force sensitivity with the element density===
 % function [U,GKF,dRdpe]=GNFEA(ndof,nele,Freedofs,IterMax,ForceVector,Nodes,Elements,edofMat,E,nu,x,p,uselessNode,pmin)
-function [U,GKF,dRdpe] = GNFEA(ndof,nele,Freedofs,IterMax,ForceVector,Nodes,Elements,edofMat,E,nu,x,p,uselessNode,pmin,U)
+function [U,GKF,dRdpe] = GNFEA(ndof,nele,Freedofs,IterMax,ForceVector,Nodes,Elements,edofMat,E,nu,x,p,uselessNode,pmin,U, step, numSteps)
 % U=zeros(ndof,1);
 loop = 0; % Iteration number
 du=zeros(ndof,1);  % Displacement increment
@@ -193,7 +193,7 @@ while loop<IterMax  && ResidualForceMax>TOL
         Freedofs=setdiff(Freedofs,uselessDOF);  % Update freedoms DOFs for convergence
         ResidualForceMax=max(abs(ResidualForce(Freedofs)));
         % disp([' N-R process.' sprintf('%4i\t:',loop) 'Residual: ' sprintf('%6.3f\t',full(ResidualForceMax)) ]);
-        % disp([' Load step: ' sprintf('%2i/%2i\t',step,numSteps) ' N-R Iteration: ' sprintf('%4i\t',loop) ' Residual: ' sprintf('%6.3f\t',full(ResidualForceMax)) ]);
+        disp([' Load step: ' sprintf('%2i/%2i\t',step,numSteps) ' N-R Iteration: ' sprintf('%4i\t',loop) ' Residual: ' sprintf('%6.3f\t',full(ResidualForceMax)) ]);
 
     end
     loop = loop + 1;
